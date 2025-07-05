@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+#    networks:
+#      - app-network
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+    env_file:
+      - config.env.development
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+#    networks:
+#      - app-network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Optional: Redis for caching in development
+#  redis:
+#    image: redis:7-alpine
+#    ports:
+#      - "6379:6379"
+#    networks:
+#      - app-network
+
+volumes:
+  postgres_dev_data:
+
+#networks:
+#  app-network:
+#    driver: bridge

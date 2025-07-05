@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: staging_user
+      POSTGRES_PASSWORD: staging_password
+      POSTGRES_DB: postgres_staging
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_staging_data:/var/lib/postgresql/data
+#    networks:
+#      - app-network
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=staging
+    env_file:
+      - config.env.staging
+    depends_on:
+      - db
+#    networks:
+#      - app-network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+  # Redis for caching in staging
+#  redis:
+#    image: redis:7-alpine
+#    ports:
+#      - "6379:6379"
+#    networks:
+#      - app-network
+
+volumes:
+  postgres_staging_data:
+
+#networks:
+#  app-network:
+#    driver: bridge
