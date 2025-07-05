@@ -79,4 +79,12 @@ alembic/versions/*.pyc
 *.db
 
 # Logs
-*.log 
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Keep example config files but ignore actual .env
+!config.env.* 
